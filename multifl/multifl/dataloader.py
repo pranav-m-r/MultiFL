@@ -1,6 +1,7 @@
 import torch
 from torch.utils.data import Dataset
 import PIL.Image
+import os
 
 class HatefulMemesDataset(Dataset):
     def __init__(self, dataset, tokenizer, transform=None):
@@ -15,7 +16,7 @@ class HatefulMemesDataset(Dataset):
         item = self.dataset[idx]
         
         # Process image
-        image = PIL.Image.open('img\\' + item['img'].split('/')[1]).convert('RGB')
+        image = PIL.Image.open(os.path.join('img', item['img'].split('/')[1])).convert('RGB')
         if self.transform:
             image = self.transform(image)
         
