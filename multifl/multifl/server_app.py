@@ -8,6 +8,22 @@ from multifl.task import get_weights
 from transformers import AutoTokenizer
 
 
+def fit_metrics_aggregation_fn(metrics):
+    """Aggregate fit metrics (e.g., train loss)."""
+    train_loss = [m[1]["train_loss"] for m in metrics]
+    return {"train_loss": sum(train_loss) / len(train_loss)}
+
+
+def evaluate_metrics_aggregation_fn(metrics):
+    """Aggregate evaluation metrics (e.g., validation loss and accuracy)."""
+    val_loss = [m[1]["val_loss"] for m in metrics]
+    val_accuracy = [m[1]["val_accuracy"] for m in metrics]
+    return {
+        "val_loss": sum(val_loss) / len(val_loss),
+        "val_accuracy": sum(val_accuracy) / len(val_accuracy),
+    }
+
+
 def server_fn(context: Context):
     # Read configuration
     num_rounds = context.run_config["num-server-rounds"]
@@ -25,6 +41,8 @@ def server_fn(context: Context):
         fraction_evaluate=1.0,
         min_available_clients=2,
         initial_parameters=parameters,
+        fit_metrics_aggregation_fn=fit_metrics_aggregation_fn,
+        evaluate_metrics_aggregation_fn=evaluate_metrics_aggregation_fn,
     )
     config = ServerConfig(num_rounds=num_rounds)
 

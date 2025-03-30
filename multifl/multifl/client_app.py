@@ -25,7 +25,7 @@ class MultimodalFlowerClient(NumPyClient):
     def evaluate(self, parameters, config):
         set_weights(self.model, parameters)
         val_loss, val_accuracy = test_model(self.model, self.valloader, self.device)
-        return val_loss, len(self.valloader.dataset), {"val_accuracy": val_accuracy}
+        return val_loss, len(self.valloader.dataset), {"val_loss": val_loss, "val_accuracy": val_accuracy}
 
 
 def client_fn(context: Context):
