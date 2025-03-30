@@ -41,7 +41,7 @@ def client_fn(context: Context):
     local_epochs = context.run_config["local-epochs"]
 
     # Return Flower client
-    return MultimodalFlowerClient(model, trainloader, valloader, local_epochs)
+    return MultimodalFlowerClient(model, trainloader, valloader, local_epochs).to_client()
 
 
 # Flower ClientApp

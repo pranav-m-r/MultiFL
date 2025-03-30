@@ -15,7 +15,7 @@ class HatefulMemesDataset(Dataset):
         item = self.dataset[idx]
         
         # Process image
-        image = PIL.Image.open(r'img\ '[:-1] + item['img'].split('/')[1]).convert('RGB')
+        image = PIL.Image.open('img\\' + item['img'].split('/')[1]).convert('RGB')
         if self.transform:
             image = self.transform(image)
         

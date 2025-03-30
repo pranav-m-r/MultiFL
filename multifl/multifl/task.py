@@ -11,8 +11,7 @@ from flwr_datasets.partitioner import IidPartitioner
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from transformers import AutoTokenizer
-from multifl.models import build_multimodal_model
-from multifl.task import HatefulMemesDataset
+from multifl.dataloader import HatefulMemesDataset
 
 
 fds = None  # Cache FederatedDataset
@@ -42,9 +41,11 @@ def load_data(partition_id: int, num_partitions: int):
     # Create dataset and loaders
     multimodal_dataset = HatefulMemesDataset(partition, tokenizer, transform=image_transform)
     # Divide data on each node: 80% train, 20% test
-    partition_train_test = multimodal_dataset.train_test_split(test_size=0.2, seed=42)
-    trainloader = DataLoader(partition_train_test["train"], batch_size=32, shuffle=True)
-    testloader = DataLoader(partition_train_test["test"], batch_size=32)
+    train_size = int(0.8 * len(multimodal_dataset))
+    test_size = len(multimodal_dataset) - train_size
+    train_dataset, test_dataset = torch.utils.data.random_split(multimodal_dataset, [train_size, test_size])
+    trainloader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+    testloader = DataLoader(test_dataset, batch_size=32)
     return trainloader, testloader
 
 
